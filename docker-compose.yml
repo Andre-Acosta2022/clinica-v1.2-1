@@ -6,7 +6,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: auth_db
-      # NOTA: MySQL no crea múltiples bases con la misma variable, debes crear bases manualmente o con script
+
     ports:
       - "3307:3306"
     networks:
@@ -46,14 +46,21 @@ services:
     depends_on:
       - mysql
       - config-server
+      - eureka-server
     networks:
       - clinic-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/auth_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
 
-  appointment-service:
+
+  ms-cita-master:
     build:
-      context: ./appointment-service
+      context: ./ms-cita-master
       dockerfile: Dockerfile
-    image: appointment-service:latest
+    image: ms-cita:latest
     ports:
       - "8082:8082"
     depends_on:
@@ -61,6 +68,10 @@ services:
       - config-server
     networks:
       - clinic-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/auth_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
 
   report-service:
     build:
@@ -74,6 +85,10 @@ services:
       - config-server
     networks:
       - clinic-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/auth_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
 
   messaging-service:
     build:
@@ -87,6 +102,10 @@ services:
       - config-server
     networks:
       - clinic-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/auth_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
 
   notification-service:
     build:
@@ -100,12 +119,16 @@ services:
       - config-server
     networks:
       - clinic-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/auth_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
 
-  client-service:
+  ms-pacientes:
     build:
-      context: ./client-service
+      context: ./ms-pacientesV2-actualizacion-2
       dockerfile: Dockerfile
-    image: client-service:latest
+    image: ms-pacientes:latest
     ports:
       - "8086:8086"
     depends_on:
@@ -113,6 +136,10 @@ services:
       - config-server
     networks:
       - clinic-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/auth_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
 
   specialist-service:
     build:
@@ -126,6 +153,10 @@ services:
       - config-server
     networks:
       - clinic-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/auth_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
 
   incident-service:
     build:
@@ -139,6 +170,10 @@ services:
       - config-server
     networks:
       - clinic-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/auth_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -164,7 +199,7 @@ services:
 
 networks:
   clinic-network:
-    driver: bridge
+    external: true
 
 volumes:
   mysql-data:

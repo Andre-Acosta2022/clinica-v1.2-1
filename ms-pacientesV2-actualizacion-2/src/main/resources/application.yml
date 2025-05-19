@@ -1,0 +1,78 @@
+# -------------------------------
+# CONFIGURACIÓN GENERAL DE SPRING
+# -------------------------------
+spring:
+  main:
+    allow-bean-definition-overriding: true
+
+  application:
+    name: ms-pacientes
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/ms_pacientes
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8088/realms/your-realm/protocol/openid-connect/certs
+
+  cloud:
+    config:
+      enabled: false
+
+server:
+  port: 8086
+
+# -------------------------------
+# RESILIENCE4J - CIRCUIT BREAKER
+# -------------------------------
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 60000
+        permittedNumberOfCallsInHalfOpenState: 3
+        minimumNumberOfCalls: 5
+    instances:
+      citaService:
+        baseConfig: default
+      hcService:
+        baseConfig: default
+      facturaService:
+        baseConfig: default
+
+# -------------------------------
+# EUREKA CLIENT
+# -------------------------------
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+# -------------------------------
+# FEIGN CLIENT (CLIENTE REST)
+# -------------------------------
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
