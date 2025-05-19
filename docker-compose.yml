@@ -1,0 +1,170 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: auth_db
+      # NOTA: MySQL no crea múltiples bases con la misma variable, debes crear bases manualmente o con script
+    ports:
+      - "3307:3306"
+    networks:
+      - clinic-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    image: eureka-server:latest
+    ports:
+      - "8761:8761"
+    networks:
+      - clinic-network
+
+  config-server:
+    build:
+      context: ./config-server
+      dockerfile: Dockerfile
+    image: config-server:latest
+    ports:
+      - "8888:8888"
+    depends_on:
+      - eureka-server
+    networks:
+      - clinic-network
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    image: auth-service:latest
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
+      - config-server
+    networks:
+      - clinic-network
+
+  appointment-service:
+    build:
+      context: ./appointment-service
+      dockerfile: Dockerfile
+    image: appointment-service:latest
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mysql
+      - config-server
+    networks:
+      - clinic-network
+
+  report-service:
+    build:
+      context: ./report-service
+      dockerfile: Dockerfile
+    image: report-service:latest
+    ports:
+      - "8083:8083"
+    depends_on:
+      - mysql
+      - config-server
+    networks:
+      - clinic-network
+
+  messaging-service:
+    build:
+      context: ./messaging-service
+      dockerfile: Dockerfile
+    image: messaging-service:latest
+    ports:
+      - "8084:8084"
+    depends_on:
+      - mysql
+      - config-server
+    networks:
+      - clinic-network
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    image: notification-service:latest
+    ports:
+      - "8085:8085"
+    depends_on:
+      - mysql
+      - config-server
+    networks:
+      - clinic-network
+
+  client-service:
+    build:
+      context: ./client-service
+      dockerfile: Dockerfile
+    image: client-service:latest
+    ports:
+      - "8086:8086"
+    depends_on:
+      - mysql
+      - config-server
+    networks:
+      - clinic-network
+
+  specialist-service:
+    build:
+      context: ./specialist-service
+      dockerfile: Dockerfile
+    image: specialist-service:latest
+    ports:
+      - "8087:8087"
+    depends_on:
+      - mysql
+      - config-server
+    networks:
+      - clinic-network
+
+  incident-service:
+    build:
+      context: ./incident-service
+      dockerfile: Dockerfile
+    image: incident-service:latest
+    ports:
+      - "8088:8088"
+    depends_on:
+      - mysql
+      - config-server
+    networks:
+      - clinic-network
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - clinic-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+    networks:
+      - clinic-network
+
+networks:
+  clinic-network:
+    driver: bridge
+
+volumes:
+  mysql-data:

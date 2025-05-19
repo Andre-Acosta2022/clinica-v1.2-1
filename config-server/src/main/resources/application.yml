@@ -8,8 +8,6 @@ spring:
           uri: https://github.com/kat14221/config-repo.git
           clone-on-start: true
           default-label: main
-  server:
-    port: 8888
   eureka:
     client:
       service-url:
@@ -19,3 +17,6 @@ spring:
       web:
         exposure:
           include: health,info
+
+server:
+  port: 8888
