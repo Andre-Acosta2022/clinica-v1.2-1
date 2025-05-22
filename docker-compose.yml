@@ -124,11 +124,11 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 123456
 
-  ms-pacientes:
+  pacientes-service:
     build:
-      context: ./ms-pacientesV2-actualizacion-2
+      context: pacientes-service
       dockerfile: Dockerfile
-    image: ms-pacientes:latest
+    image: pacientes-service:latest
     ports:
       - "8086:8086"
     depends_on:

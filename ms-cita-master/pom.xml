@@ -139,7 +139,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.10.1</version>
+				<version>3.11.0</version>
 				<configuration>
 					<source>21</source>
 					<target>21</target>
@@ -147,7 +147,7 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>1.18.28</version> <!-- Asegúrate de poner la versión correcta -->
+							<version>1.18.30</version> <!-- Asegúrate de poner la versión correcta -->
 						</path>
 					</annotationProcessorPaths>
 				</configuration>

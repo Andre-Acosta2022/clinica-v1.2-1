@@ -99,6 +99,7 @@
 		<module>config-server</module>
 		<module>api-gateway</module>
 		<module>ms-cita-master</module>
+		<module>pacientes-service</module>
 	</modules>
 	<build>
 		<plugins>
