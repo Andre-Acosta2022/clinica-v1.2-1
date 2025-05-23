@@ -1,6 +1,5 @@
 package upeu.edu.pe.ms_paciente.domain;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,20 +15,15 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table(name="pacientes")
 @EntityListeners(AuditingEntityListener.class)
-public class Paciente {
+@Table(name="aseguradora")
+public class SeguroMedico {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
     private Long id;
 
-    @Column(name = "person_id", nullable = false, unique = true)
-    private Long personId;
-
-    @ManyToOne
-    @JoinColumn(name = "medical_secure_id")
-    private SeguroMedico seguroMedico;
+    @Column(nullable = false)
+    private String name;
 
     @Column(nullable = false)
     private Boolean deleted;
@@ -42,7 +36,8 @@ public class Paciente {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public Paciente() {
+    public SeguroMedico() {
         this.deleted = false;
     }
 }
+

@@ -1,4 +1,4 @@
-package upeu.edu.pe.ms_paciente.Security;
+package upeu.edu.pe.ms_paciente.config.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

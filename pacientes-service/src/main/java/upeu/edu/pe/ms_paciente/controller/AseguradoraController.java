@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import upeu.edu.pe.ms_paciente.domain.aseguradora;
+import upeu.edu.pe.ms_paciente.domain.SeguroMedico;
 import upeu.edu.pe.ms_paciente.service.AseguradoraService;
 
 import java.util.List;
@@ -18,9 +18,9 @@ public class AseguradoraController {
     private AseguradoraService aseguradoraService;
 
     @GetMapping
-    public ResponseEntity<List<aseguradora>> readAll() {
+    public ResponseEntity<List<SeguroMedico>> readAll() {
         try {
-            List<aseguradora> aseguradoras = aseguradoraService.readAll();
+            List<SeguroMedico> aseguradoras = aseguradoraService.readAll();
             if (aseguradoras.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -31,9 +31,9 @@ public class AseguradoraController {
     }
 
     @PostMapping
-    public ResponseEntity<aseguradora> guardarAseguradora(@Valid @RequestBody aseguradora asegur) {
+    public ResponseEntity<SeguroMedico> guardarAseguradora(@Valid @RequestBody SeguroMedico asegur) {
         try {
-            aseguradora a = aseguradoraService.create(asegur);
+            SeguroMedico a = aseguradoraService.create(asegur);
             return new ResponseEntity<>(a, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -41,9 +41,9 @@ public class AseguradoraController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<aseguradora> getAseguradoraById(@PathVariable("id") Long id) {
+    public ResponseEntity<SeguroMedico> getAseguradoraById(@PathVariable("id") Long id) {
         try {
-            aseguradora a = aseguradoraService.read(id).get();
+            SeguroMedico a = aseguradoraService.read(id).get();
             return new ResponseEntity<>(a, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -61,8 +61,8 @@ public class AseguradoraController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAseguradora(@PathVariable("id") Long id, @Valid @RequestBody aseguradora asegu) {
-        Optional<aseguradora> a = aseguradoraService.read(id);
+    public ResponseEntity<?> updateAseguradora(@PathVariable("id") Long id, @Valid @RequestBody SeguroMedico asegu) {
+        Optional<SeguroMedico> a = aseguradoraService.read(id);
         if (a.isEmpty()) {
             asegu.setId(id); // Asigna el ID para evitar crear uno nuevo
             return new ResponseEntity<>(aseguradoraService.update(asegu), HttpStatus.OK);

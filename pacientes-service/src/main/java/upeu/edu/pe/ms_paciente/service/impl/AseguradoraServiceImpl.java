@@ -1,7 +1,7 @@
 package upeu.edu.pe.ms_paciente.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import upeu.edu.pe.ms_paciente.domain.aseguradora;
+import upeu.edu.pe.ms_paciente.domain.SeguroMedico;
 import upeu.edu.pe.ms_paciente.repository.AseguradoraRepository;
 import upeu.edu.pe.ms_paciente.service.AseguradoraService;
 
@@ -14,12 +14,12 @@ public class AseguradoraServiceImpl implements AseguradoraService {
     private AseguradoraRepository repository;
 
     @Override
-    public aseguradora create(aseguradora a) {
+    public SeguroMedico create(SeguroMedico a) {
         return repository.save(a);
     }
 
     @Override
-    public aseguradora update(aseguradora a) {
+    public SeguroMedico update(SeguroMedico a) {
         return repository.save(a);
     }
 
@@ -29,12 +29,12 @@ public class AseguradoraServiceImpl implements AseguradoraService {
     }
 
     @Override
-    public Optional<aseguradora> read(Long id) {
+    public Optional<SeguroMedico> read(Long id) {
         return repository.findById(id);
     }
 
     @Override
-    public List<aseguradora> readAll() {
+    public List<SeguroMedico> readAll() {
         return repository.findAll();
     }
 
