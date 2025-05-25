@@ -1,12 +1,14 @@
 package upeu.edu.pe.ms_paciente.controller;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import upeu.edu.pe.ms_paciente.domain.Dto.CitaDTO;
-import upeu.edu.pe.ms_paciente.domain.Dto.FacturaDTO;
-import upeu.edu.pe.ms_paciente.domain.Dto.HistoriaClinicaDTO;
+import upeu.edu.pe.ms_paciente.domain.Dto.PacienteDto;
+import upeu.edu.pe.ms_paciente.domain.Dto.request.PacienteRequest;
 import upeu.edu.pe.ms_paciente.domain.Paciente;
 import upeu.edu.pe.ms_paciente.service.PacienteService;
 import upeu.edu.pe.ms_paciente.service.impl.PacienteServiceImpl;
@@ -16,86 +18,43 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/pacientes")
+@RequiredArgsConstructor
 public class PacienteController {
-    @Autowired
-    private PacienteService pacienteService;
-    private PacienteServiceImpl service;
-
-    @GetMapping
-    public ResponseEntity<List<Paciente>> readAll() {
-        try {
-            List<Paciente> pacients = pacienteService.readAll();
-            if(pacients.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(pacients, HttpStatus.OK);
-        } catch (Exception e) {
-            // TODO: handle exception
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
-    @PostMapping
-    public ResponseEntity<Paciente> guardarPaciente(@Valid @RequestBody Paciente paci) {
-        try {
-            Paciente c = pacienteService.create(paci);
-            return new ResponseEntity<>(c, HttpStatus.CREATED);
-        } catch (Exception e) {
-            // TODO: handle exception
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    private final PacienteService pacienteService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Paciente> getPacienteId(@PathVariable("id") Long id) {
-        try {
-            Paciente c = pacienteService.read(id).get();
-            return new ResponseEntity<>(c, HttpStatus.CREATED);
-        } catch (Exception e) {
-            // TODO: handle exception
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<PacienteDto> getPacienteById(@PathVariable Long id) {
+        PacienteDto paciente = pacienteService.getById(id);
+        return ResponseEntity.ok(paciente);
     }
 
+    @GetMapping
+    public ResponseEntity<Page<PacienteDto>> getPacientes(Pageable pageable,
+                                                          @RequestParam(required = false) String filter) {
+        Page<PacienteDto> pacientes = pacienteService.getAll(pageable, filter);
+        return ResponseEntity.ok(pacientes);
+    }
 
+    @PostMapping
+    public ResponseEntity<PacienteDto> createPaciente(@Valid @RequestBody PacienteRequest dto) {
+        PacienteDto creado = pacienteService.create(dto);
+        return new ResponseEntity<>(creado, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PacienteDto> updatePaciente(@PathVariable Long id,
+                                                      @Valid @RequestBody PacienteRequest dto) {
+        PacienteDto actualizado = pacienteService.update(id, dto);
+        return ResponseEntity.ok(actualizado);
+    }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarPaciente(@PathVariable("id") Long id) {
-        try {
-            pacienteService.delete(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            // TODO: handle exception
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<Void> deletePaciente(@PathVariable Long id) {
+        boolean eliminado = pacienteService.delete(id);
+        if (eliminado) {
+            return ResponseEntity.noContent().build();
         }
-    }
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updatePaciente(@PathVariable("id") Long id, @Valid @RequestBody Paciente paci){
-
-        Optional<Paciente> c = pacienteService.read(id);
-        if(!c.isEmpty()) {
-            paci.setId(id); // Asigna el ID para evitar crear uno nuevo
-            return new ResponseEntity<>(pacienteService.update(paci), HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-
-    }
-    /**
-     dto cita
-     * */
-    @GetMapping("/{id}/citas")
-    public ResponseEntity<List<CitaDTO>> obtenerCitasPaciente(@PathVariable Long id) {
-        return ResponseEntity.ok(service.obtenerCitasPaciente(id));
-    }
-    @GetMapping("/{id}/historia-clinica")
-    public ResponseEntity<List<HistoriaClinicaDTO>> getHistoriaClinicaPaciente(@PathVariable Long id) {
-        return ResponseEntity.ok(service.obtenerHistoriaClinicaPaciente(id));
-    }
-
-    @GetMapping("/{id}/facturas")
-    public ResponseEntity<List<FacturaDTO>> getFacturasPaciente(@PathVariable Long id) {
-        return ResponseEntity.ok(service.obtenerFacturasPaciente(id));
+        return ResponseEntity.notFound().build();
     }
 
 }

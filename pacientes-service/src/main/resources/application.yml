@@ -42,19 +42,19 @@ resilience4j:
   circuitbreaker:
     configs:
       default:
-        slidingWindowSize: 10
-        failureRateThreshold: 50
-        waitDurationInOpenState: 60000
-        permittedNumberOfCallsInHalfOpenState: 3
-        minimumNumberOfCalls: 5
+        register-health-indicator: true
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
+        minimum-number-of-calls: 5
+        slow-call-rate-threshold: 50
+        slow-call-duration-threshold: 2s
     instances:
-      citaService:
-        baseConfig: default
-      hcService:
-        baseConfig: default
-      facturaService:
-        baseConfig: default
-
+      personaService:
+        base-config: default
+      seguroMedicoService:
+        base-config: default
 # -------------------------------
 # EUREKA CLIENT
 # -------------------------------
@@ -76,3 +76,15 @@ feign:
       default:
         connectTimeout: 5000
         readTimeout: 5000
+
+# -------------------------------
+# endpoints de Actuator
+# -------------------------------
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,circuitbreakerevents,circuitbreaker
+  endpoint:
+    health:
+      show-details: always

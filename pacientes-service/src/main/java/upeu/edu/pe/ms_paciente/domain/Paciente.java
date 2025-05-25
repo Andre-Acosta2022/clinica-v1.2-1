@@ -11,7 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-
+@NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
@@ -19,20 +19,20 @@ import java.time.LocalDateTime;
 @Table(name="pacientes")
 @EntityListeners(AuditingEntityListener.class)
 public class Paciente {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
     private Long id;
 
     @Column(name = "person_id", nullable = false, unique = true)
     private Long personId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medical_secure_id")
     private SeguroMedico seguroMedico;
 
     @Column(nullable = false)
-    private Boolean deleted;
+    private Boolean deleted = false;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -41,8 +41,4 @@ public class Paciente {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    public Paciente() {
-        this.deleted = false;
-    }
 }

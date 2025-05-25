@@ -10,7 +10,9 @@ public class FeignRequestInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate template) {
-        String token = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
-        template.header("Authorization", "Bearer " + token);
+        Object credentials = SecurityContextHolder.getContext().getAuthentication().getCredentials();
+        if (credentials instanceof String) {
+            template.header("Authorization", "Bearer " + credentials);
+        }
     }
 }

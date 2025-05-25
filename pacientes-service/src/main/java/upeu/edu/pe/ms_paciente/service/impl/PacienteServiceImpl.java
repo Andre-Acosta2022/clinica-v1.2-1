@@ -1,90 +1,96 @@
 package upeu.edu.pe.ms_paciente.service.impl;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import upeu.edu.pe.ms_paciente.Client.CitaClient;
-import upeu.edu.pe.ms_paciente.Client.FacturaClient;
-import upeu.edu.pe.ms_paciente.Client.HCClient;
-import upeu.edu.pe.ms_paciente.domain.Dto.CitaDTO;
-import upeu.edu.pe.ms_paciente.domain.Dto.FacturaDTO;
-import upeu.edu.pe.ms_paciente.domain.Dto.HistoriaClinicaDTO;
+import upeu.edu.pe.ms_paciente.Client.PersonaClient;
+import upeu.edu.pe.ms_paciente.Mapper.PacienteMapper;
+import upeu.edu.pe.ms_paciente.domain.Dto.PacienteDto;
+import upeu.edu.pe.ms_paciente.domain.Dto.request.PacienteRequest;
 import upeu.edu.pe.ms_paciente.domain.Paciente;
 import upeu.edu.pe.ms_paciente.repository.PacienteRepository;
 import upeu.edu.pe.ms_paciente.service.PacienteService;
+import upeu.edu.pe.ms_paciente.specificacion.pacienteSpecificacion;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class PacienteServiceImpl implements PacienteService {
-
-    @Autowired
-    private PacienteRepository repository;
-
-    @Autowired
-    private CitaClient citaClient;
-
-    @Autowired
-    private HCClient hcClient;
-
-    @Autowired
-    private FacturaClient facturaClient;
+    private final PacienteRepository repository;
+    private final PacienteMapper mapper;
+    private final PersonaClient personaClient; // Si llamas otro microservicio
 
     @Override
-    public Paciente create(Paciente c) {
-        return repository.save(c);
+    @CircuitBreaker(name = "personaService", fallbackMethod = "fallbackGetById")
+    public PacienteDto getById(Long id) {
+        // Ejemplo si llamas microservicio externo persona
+        // PersonaDto persona = personaClient.findById(id);
+
+        Paciente paciente = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Paciente no encontrado con id: " + id));
+        return mapper.toDTO(paciente);
     }
 
-    @Override
-    public Paciente update(Paciente c) {
-        return repository.save(c);
+    public PacienteDto fallbackGetById(Long id, Throwable t) {
+        // Devuelve DTO vacío o datos por defecto si falla el servicio
+        return new PacienteDto();
     }
 
     @Override
-    public void delete(Long id) {
-        repository.deleteById(id);
+    @CircuitBreaker(name = "personaService", fallbackMethod = "fallbackGetAll")
+    public Page<PacienteDto> getAll(Pageable pageable, String filter) {
+        Page<Paciente> pacientes = repository.findAll(
+                Specification.where(pacienteSpecificacion.deletedEqual(false)), pageable);
+        return pacientes.map(mapper::toDTO);
+    }
+
+    public Page<PacienteDto> fallbackGetAll(Pageable pageable, String filter, Throwable t) {
+        return Page.empty(pageable);
     }
 
     @Override
-    public Optional<Paciente> read(Long id) {
-        return repository.findById(id);
+    @CircuitBreaker(name = "personaService", fallbackMethod = "fallbackCreate")
+    public PacienteDto create(PacienteRequest dto) {
+        Paciente paciente = mapper.toEntity(dto);
+        paciente = repository.save(paciente);
+        return mapper.toDTO(paciente);
+    }
+
+    public PacienteDto fallbackCreate(PacienteRequest dto, Throwable t) {
+        return new PacienteDto();
     }
 
     @Override
-    public List<Paciente> readAll() {
-        return repository.findAll();
+    @CircuitBreaker(name = "personaService", fallbackMethod = "fallbackUpdate")
+    public PacienteDto update(Long id, PacienteRequest dto) {
+        Paciente pacienteExistente = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Paciente no encontrado con id: " + id));
+        mapper.updateEntityFromDto(dto, pacienteExistente);
+        pacienteExistente = repository.save(pacienteExistente);
+        return mapper.toDTO(pacienteExistente);
+    }
+
+    public PacienteDto fallbackUpdate(Long id, PacienteRequest dto, Throwable t) {
+        return new PacienteDto();
     }
 
     @Override
-    @CircuitBreaker(name = "citaService", fallbackMethod = "fallbackCitas")
-    public List<CitaDTO> obtenerCitasPaciente(Long id) {
-        return citaClient.obtenerCitasPorPaciente(id);
+    @CircuitBreaker(name = "personaService", fallbackMethod = "fallbackDelete")
+    public boolean delete(Long id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
-    public List<CitaDTO> fallbackCitas(Long id, Throwable t) {
-        // Retorna lista vacía o manejo alternativo en caso de fallo
-        return Collections.emptyList();
-    }
-
-    @Override
-    @CircuitBreaker(name = "hcService", fallbackMethod = "fallbackHistoriaClinica")
-    public List<HistoriaClinicaDTO> obtenerHistoriaClinicaPaciente(Long id) {
-        return hcClient.obtenerHistoriaClinicaPorPaciente(id);
-    }
-
-    public List<HistoriaClinicaDTO> fallbackHistoriaClinica(Long id, Throwable t) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    @CircuitBreaker(name = "facturaService", fallbackMethod = "fallbackFacturas")
-    public List<FacturaDTO> obtenerFacturasPaciente(Long id) {
-        return facturaClient.obtenerFacturasPorPaciente(id);
-    }
-
-    public List<FacturaDTO> fallbackFacturas(Long id, Throwable t) {
-        return Collections.emptyList();
+    public boolean fallbackDelete(Long id, Throwable t) {
+        return false;
     }
 }

@@ -1,22 +1,20 @@
 package upeu.edu.pe.ms_paciente.service;
-import org.springframework.stereotype.Service;
-import upeu.edu.pe.ms_paciente.domain.Dto.CitaDTO;
-import upeu.edu.pe.ms_paciente.domain.Dto.FacturaDTO;
-import upeu.edu.pe.ms_paciente.domain.Dto.HistoriaClinicaDTO;
-import upeu.edu.pe.ms_paciente.domain.Paciente;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import upeu.edu.pe.ms_paciente.domain.Dto.PacienteDto;
+import upeu.edu.pe.ms_paciente.domain.Dto.request.PacienteRequest;
 
-
-import java.util.List;
-import java.util.Optional;
-
-@Service
+@CircuitBreaker(name = "PacienteService", fallbackMethod = "FallBackFactory")
 public interface PacienteService {
-    Paciente create(Paciente c);
-    Paciente update(Paciente c);
-    void delete(Long id);
-    Optional<Paciente> read(Long id);
-    List<Paciente> readAll();
-    List<CitaDTO> obtenerCitasPaciente(Long id);
-    List<HistoriaClinicaDTO> obtenerHistoriaClinicaPaciente(Long id);
-    List<FacturaDTO> obtenerFacturasPaciente(Long id);
+
+    PacienteDto getById(Long id);
+
+    Page<PacienteDto> getAll(Pageable pageable, String filter);
+
+    PacienteDto create(PacienteRequest dto);
+
+    PacienteDto update(Long id, PacienteRequest dto);
+
+    boolean delete(Long id);
 }

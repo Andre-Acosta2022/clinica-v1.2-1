@@ -1,7 +1,9 @@
 package Configuration;
 
-import lombok.Value;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.route.RouteLocator;
+
 import org.springframework.cloud.gateway.route.builder.GatewayFilterSpec;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -13,18 +15,20 @@ public class GatewayRoutesConfig {
     private String eurekaUrl;
 
 
-    @Bean
     public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("apollo-federation", r -> r.path("/graphql/**")
+                // Ruta para el servicio de autenticación REST
+                .route("auth-service", r -> r.path("/auth/**")
                         .filters(GatewayFilterSpec::tokenRelay)
-                        .uri("lb://apollo-federation"))
-                .route("payment-sv", r -> r.path("/api/**")
+                        .uri("lb://auth-service"))
+                // Ruta para el servicio de citas REST
+                .route("appointment-service", r -> r.path("/appointments/**")
                         .filters(GatewayFilterSpec::tokenRelay)
-                        .uri("lb://payment-sv"))
-                .route("eureka-sv", r -> r.path("/eureka/**")
+                        .uri("lb://appointment-service"))
+                // Ruta para el Eureka Server (si lo necesitas)
+                .route("eureka-server", r -> r.path("/eureka/**")
                         .filters(GatewayFilterSpec::tokenRelay)
-                        .uri("http://" + eurekaUrl))
+                        .uri("https://" + eurekaUrl))
                 .build();
     }
 }

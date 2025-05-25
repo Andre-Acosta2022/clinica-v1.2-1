@@ -1,73 +1,56 @@
 package upeu.edu.pe.ms_paciente.controller;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import upeu.edu.pe.ms_paciente.domain.Dto.SeguroMedicoDto;
+import upeu.edu.pe.ms_paciente.domain.Dto.request.SeguroMedicoRequest;
 import upeu.edu.pe.ms_paciente.domain.SeguroMedico;
-import upeu.edu.pe.ms_paciente.service.AseguradoraService;
+import upeu.edu.pe.ms_paciente.service.SeguroMedicoService;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/aseguradoras")
+@RequiredArgsConstructor
 public class AseguradoraController {
+    private final SeguroMedicoService seguroMedicoService;
 
-    @Autowired
-    private AseguradoraService aseguradoraService;
+    @GetMapping("/{id}")
+    public ResponseEntity<SeguroMedicoDto> getById(@PathVariable Long id) {
+        return seguroMedicoService.getById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     @GetMapping
-    public ResponseEntity<List<SeguroMedico>> readAll() {
-        try {
-            List<SeguroMedico> aseguradoras = aseguradoraService.readAll();
-            if (aseguradoras.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(aseguradoras, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<List<SeguroMedicoDto>> getAll() {
+        List<SeguroMedicoDto> lista = seguroMedicoService.getAll();
+        if (lista.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
+        return ResponseEntity.ok(lista);
     }
 
     @PostMapping
-    public ResponseEntity<SeguroMedico> guardarAseguradora(@Valid @RequestBody SeguroMedico asegur) {
-        try {
-            SeguroMedico a = aseguradoraService.create(asegur);
-            return new ResponseEntity<>(a, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<SeguroMedico> getAseguradoraById(@PathVariable("id") Long id) {
-        try {
-            SeguroMedico a = aseguradoraService.read(id).get();
-            return new ResponseEntity<>(a, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarAseguradora(@PathVariable("id") Long id) {
-        try {
-            aseguradoraService.delete(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<SeguroMedicoDto> create(@Valid @RequestBody SeguroMedicoRequest dto) {
+        SeguroMedicoDto creado = seguroMedicoService.create(dto);
+        return new ResponseEntity<>(creado, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAseguradora(@PathVariable("id") Long id, @Valid @RequestBody SeguroMedico asegu) {
-        Optional<SeguroMedico> a = aseguradoraService.read(id);
-        if (a.isEmpty()) {
-            asegu.setId(id); // Asigna el ID para evitar crear uno nuevo
-            return new ResponseEntity<>(aseguradoraService.update(asegu), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+    public ResponseEntity<SeguroMedicoDto> update(@PathVariable Long id,
+                                                  @Valid @RequestBody SeguroMedicoRequest dto) {
+        SeguroMedicoDto actualizado = seguroMedicoService.update(id, dto);
+        return ResponseEntity.ok(actualizado);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        seguroMedicoService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

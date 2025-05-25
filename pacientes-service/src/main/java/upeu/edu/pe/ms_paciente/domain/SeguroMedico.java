@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Setter
 @Getter
 @Entity
@@ -26,7 +27,7 @@ public class SeguroMedico {
     private String name;
 
     @Column(nullable = false)
-    private Boolean deleted;
+    private Boolean deleted = false;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -35,9 +36,5 @@ public class SeguroMedico {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    public SeguroMedico() {
-        this.deleted = false;
-    }
 }
 

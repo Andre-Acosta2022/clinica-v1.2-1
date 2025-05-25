@@ -1,7 +1,8 @@
 package Configuration;
 
 import jakarta.ws.rs.HttpMethod;
-import lombok.Value;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
