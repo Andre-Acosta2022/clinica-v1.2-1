@@ -8,7 +8,7 @@ spring:
     name: Persona-service
 
   datasource:
-    url: jdbc:mysql://localhost:3306/persona-service
+    url: jdbc:mysql://mysql:3306/persona-service
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -31,7 +31,7 @@ spring:
       enabled: false
 
 server:
-  port: 8087
+  port: 8089
 
 # -------------------------------
 # RESILIENCE4J - CIRCUIT BREAKER

@@ -87,18 +87,18 @@
 	<modules>
 		<module>auth-service</module>
 		<module>appointment-service</module>
-		<module>report-service</module>
+		<module>informe-service</module>
 		<module>test-service</module>
-		<module>messaging-service</module>
-		<module>notification-service</module>
+		<module>Clinica-service</module>
+		<module>ServicioMedico-service</module>
 		<module>Persona-service</module>
-		<module>specialist-service</module>
-		<module>incident-service</module>
+		<module>pago-service</module>
+		<module>Doctor-service</module>
 		<module>ui-service</module>
 		<module>eureka-server</module>
 		<module>config-server</module>
 		<module>api-gateway</module>
-		<module>ms-cita-master</module>
+		<module>Consulta-service</module>
 		<module>pacientes-service</module>
 	</modules>
 	<build>

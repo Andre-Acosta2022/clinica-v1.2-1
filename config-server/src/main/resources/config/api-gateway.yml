@@ -32,10 +32,10 @@ server:
             uri: lb://NOTIFICATION-SERVICE
             predicates:
               - Path=/notifications/**
-          - id: client-service
-            uri: lb://CLIENT-SERVICE
+          - id: persona -service
+            uri: lb://PERSONA-SERVICE
             predicates:
-              - Path=/clients/**
+              - Path=/persona/**
           - id: specialist-service
             uri: lb://SPECIALIST-SERVICE
             predicates:
@@ -48,3 +48,7 @@ server:
             uri: lb://UI-SERVICE
             predicates:
               - Path=/ui/**
+          - id: pacientes-service
+            uri: lb://PACIENTES-SERVICE
+            predicates:
+              - Path=/pacientes/**

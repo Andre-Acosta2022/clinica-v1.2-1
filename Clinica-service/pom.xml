@@ -7,8 +7,8 @@
 		<artifactId>medical-clinic-system</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>specialist-service</artifactId>
-	<name>specialist-service</name>
+	<artifactId>Clinica-service</artifactId>
+	<name>messaging-service</name>
 	<description>a</description>
 	<url/>
 	<licenses>

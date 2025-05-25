@@ -7,8 +7,8 @@
 		<artifactId>medical-clinic-system</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>notification-service</artifactId>
-	<name>notification-service</name>
+	<artifactId>informe-service</artifactId>
+	<name>report-service</name>
 	<description>a</description>
 	<url/>
 	<licenses>
