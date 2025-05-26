@@ -1,4 +1,4 @@
-package com.clinic.specialist_service;
+package com.clinic.pago_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

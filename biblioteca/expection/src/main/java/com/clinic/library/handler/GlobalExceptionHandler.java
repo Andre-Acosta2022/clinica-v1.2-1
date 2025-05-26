@@ -1,7 +1,7 @@
-package com.climedar.library.handler;
+package com.clinic.library.handler;
 
-import com.climedar.library.dto.ApiError;
-import com.climedar.library.exception.ClimedarException;
+import com.clinic.library.dto.ApiError;
+import com.clinic.library.exception.ClinicException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,8 +18,8 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ClimedarException.class)
-    private ResponseEntity<ApiError> handlerCriminalCrossException(ClimedarException e){
+    @ExceptionHandler(ClinicException.class)
+    private ResponseEntity<ApiError> handlerCriminalCrossException(ClinicException e){
         log.error(String.valueOf(e));
 
         ApiError apiError = new ApiError(e.getCode(), e.getMessage(), BAD_REQUEST.value());

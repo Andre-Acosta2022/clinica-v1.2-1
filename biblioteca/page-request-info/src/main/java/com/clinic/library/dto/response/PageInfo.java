@@ -1,4 +1,4 @@
-package com.climedar.library.dto.response;
+package com.clinic.library.dto.response;
 
 import lombok.Data;
 

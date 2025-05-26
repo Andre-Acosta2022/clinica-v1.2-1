@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: pago-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/payment_db
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  cloud:
+    config:
+      enabled: false    # Aquí debe ir
+
+server:
+  port: 8088
+
+eureka:
+  instance:
+    lease-renewal-interval-in-seconds: 30
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+logging:
+  level:
+    feign.Client: DEBUG
+    com.clinic.payment_sv: DEBUG
+
+security:
+  oauth2:
+    resourceserver:
+      jwt:
+        issuer-uri: ${ISSUER_URI}  # Variable de entorno obligatoria
