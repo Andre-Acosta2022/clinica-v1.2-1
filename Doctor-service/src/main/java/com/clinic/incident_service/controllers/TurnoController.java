@@ -1,7 +1,7 @@
 package com.clinic.incident_service.controllers;
 
-import com.example.msmedico.domain.Turno;
-import com.example.msmedico.repository.TurnoRepository;
+import com.clinic.incident_service.domain.Turno;
+import com.clinic.incident_service.repository.TurnoRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

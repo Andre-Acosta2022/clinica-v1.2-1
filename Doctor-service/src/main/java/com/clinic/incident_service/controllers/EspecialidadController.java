@@ -1,7 +1,8 @@
 package com.clinic.incident_service.controllers;
 
-import com.example.msmedico.domain.Especialidad;
-import com.example.msmedico.repository.EspecialidadRepository;
+import com.clinic.incident_service.domain.Especialidad;
+import com.clinic.incident_service.repository.EspecialidadRepository;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
