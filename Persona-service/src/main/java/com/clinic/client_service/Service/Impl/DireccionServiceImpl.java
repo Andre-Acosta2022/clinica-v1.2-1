@@ -5,15 +5,18 @@ import com.clinic.client_service.domain.Direccion;
 import com.clinic.client_service.domain.Dto.request.create.crearDireccionDto;
 import com.clinic.client_service.domain.Dto.request.update.UpdateDireccionDTO;
 import com.clinic.client_service.mapper.DireccionMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DireccionServiceImpl implements DireccionService {
-
+@Autowired
+@Qualifier("direccionMapper")
     private final DireccionMapper addressMapper;
 
-    public DireccionServiceImpl(DireccionMapper addressMapper) {
-        this.addressMapper = addressMapper;
+    public DireccionServiceImpl(DireccionMapper direccionMapper) {
+        this.addressMapper = direccionMapper;
     }
 
     @Override
