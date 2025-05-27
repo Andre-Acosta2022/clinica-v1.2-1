@@ -1,5 +1,5 @@
 services:
-  # Base de datos para cada microservicio
+  # Bases de datos para cada microservicio
   mysql-auth:
     image: mysql:8
     environment:
@@ -10,55 +10,7 @@ services:
     networks:
       - clinic-network
     volumes:
-      - mysql-auth-data:/var/lib/mysql
-
-  mysql-cita:
-    image: mysql:8
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: cita_db
-    ports:
-      - "3311:3306"
-    networks:
-      - clinic-network
-    volumes:
-      - mysql-cita-data:/var/lib/mysql
-
-  mysql-report:
-    image: mysql:8
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: report_db
-    ports:
-      - "3312:3306"
-    networks:
-      - clinic-network
-    volumes:
-      - mysql-report-data:/var/lib/mysql
-
-  mysql-messaging:
-    image: mysql:8
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: messaging_db
-    ports:
-      - "3313:3306"
-    networks:
-      - clinic-network
-    volumes:
-      - mysql-messaging-data:/var/lib/mysql
-
-  mysql-notifications:
-    image: mysql:8
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: notifications_db
-    ports:
-      - "3310:3306"
-    networks:
-      - clinic-network
-    volumes:
-      - mysql-notifications-data:/var/lib/mysql
+      - mysql-auth:/var/lib/mysql
 
   mysql-pacientes:
     image: mysql:8
@@ -70,43 +22,31 @@ services:
     networks:
       - clinic-network
     volumes:
-      - mysql-pacientes-data:/var/lib/mysql
-      -
+      - mysql-pacientes:/var/lib/mysql
+      
   mysql-persona:
     image: mysql:8
     environment:
       MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: persona_db
+      MYSQL_DATABASE: persona-service
     ports:
-      - "3309:3306"
+      - "3310:3306"          # Cambié puerto para evitar conflicto con pacientes
     networks:
       - clinic-network
     volumes:
-      - mysql-pacientes-data:/var/lib/mysql
+      - mysql-persona:/var/lib/mysql  # Nombre de volumen corregido
 
-  mysql-specialists:
+  mysql-medico:
     image: mysql:8
     environment:
       MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: specialists_db
+      MYSQL_DATABASE: ms-medico
     ports:
       - "3308:3306"
     networks:
       - clinic-network
     volumes:
-      - mysql-specialists-data:/var/lib/mysql
-
-  mysql-incident:
-    image: mysql:8
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: incident_db
-    ports:
-      - "3314:3306"
-    networks:
-      - clinic-network
-    volumes:
-      - mysql-incident-data:/var/lib/mysql
+      - mysql-medico:/var/lib/mysql
 
   # Infraestructura
   eureka-server:
@@ -126,17 +66,14 @@ services:
     image: config-server:latest
     ports:
       - "8888:8888"
-
     depends_on:
       - eureka-server
     networks:
       - clinic-network
 
-
-
   gateway-service:
     build:
-      context: ./api-gateway
+      context: ./gateway-service
       dockerfile: Dockerfile
     image: gateway-service:latest
     ports:
@@ -169,76 +106,6 @@ services:
       SPRING_DATASOURCE_PASSWORD: 123456
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
 
-  ms-cita-master:
-    build:
-      context: ./ms-cita-master
-      dockerfile: Dockerfile
-    image: ms-cita:latest
-    ports:
-      - "8082:8082"
-    depends_on:
-      - mysql-cita
-      - config-server
-    networks:
-      - clinic-network
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-cita:3306/cita_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 123456
-
-  report-service:
-    build:
-      context: ./report-service
-      dockerfile: Dockerfile
-    image: report-service:latest
-    ports:
-      - "8083:8083"
-    depends_on:
-      - mysql-report
-      - config-server
-    networks:
-      - clinic-network
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-report:3306/report_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 123456
-
-  messaging-service:
-    build:
-      context: ./messaging-service
-      dockerfile: Dockerfile
-    image: messaging-service:latest
-    ports:
-      - "8084:8084"
-    depends_on:
-      - mysql-messaging
-      - config-server
-    networks:
-      - clinic-network
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-messaging:3306/messaging_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 123456
-
-  notification-service:
-    build:
-      context: ./notification-service
-      dockerfile: Dockerfile
-    image: notification-service:latest
-    ports:
-      - "8085:8085"
-    depends_on:
-      - mysql-notifications
-      - config-server
-      - kafka
-    networks:
-      - clinic-network
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-notifications:3306/notifications_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 123456
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-
   pacientes-service:
     build:
       context: ./pacientes-service
@@ -256,37 +123,20 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 123456
 
-  specialist-service:
+  doctor-service:
     build:
-      context: ./specialist-service
+      context: ./doctor-service    # Revisa si es minúscula o mayúscula en tu proyecto
       dockerfile: Dockerfile
-    image: specialist-service:latest
+    image: doctor-service:latest
     ports:
       - "8087:8087"
     depends_on:
-      - mysql-specialists
+      - mysql-medico
       - config-server
     networks:
       - clinic-network
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-specialists:3306/specialists_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 123456
-
-  incident-service:
-    build:
-      context: ./incident-service
-      dockerfile: Dockerfile
-    image: incident-service:latest
-    ports:
-      - "8088:8088"
-    depends_on:
-      - mysql-incident
-      - config-server
-    networks:
-      - clinic-network
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-incident:3306/incident_db
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-medico:3306/ms-medico
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 123456
 
@@ -312,18 +162,12 @@ services:
     networks:
       - clinic-network
 
-
 networks:
   clinic-network:
     driver: bridge
 
 volumes:
-  mysql-auth-data:
-  mysql-consulta-data:
-  mysql-persona-data:
-  mysql-informe-data:
-  mysql-doctor-data:
-  mysql-clinica-data:
-  mysql-pacientes-data:
-  mysql-serviciomedico-data:
-  mysql-pago-data:
+  mysql-auth:
+  mysql-pacientes:
+  mysql-persona:
+  mysql-medico:
